@@ -1,4 +1,4 @@
-body {
+/* body {
     font-family: Arial, sans-serif;
     background: #f5f7fa;
     color: #333;
@@ -103,4 +103,4 @@ tr.active {
 
 .action-btn:hover {
     background-color: #1da851;
-}
+} 
