@@ -80,15 +80,15 @@ tr:nth-child(even) {
 
 /* Status color indicators */
 tr.expired {
-    background-color: #ffdddd !important;
+    background-color: #ec6161 !important;
 }
 
 tr.due-soon {
-    background-color: #fff4cc !important;
+    background-color: #ddc673 !important;
 }
 
 tr.active {
-    background-color: #ddffdd !important;
+    background-color: #9ae79a !important;
 }
 
 /* Action button */
@@ -104,3 +104,35 @@ tr.active {
 .action-btn:hover {
     background-color: #1da851;
 } 
+/* Table Scroll Container */
+.table-container {
+  max-width: 100%;
+  max-height: 400px; /* adjust height as needed */
+  overflow-x: auto;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-top: 15px;
+  background-color: #fff;
+}
+
+/* Make sure table headers align properly */
+#customerTable {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 800px; /* ensures horizontal scroll when too many columns */
+}
+
+#customerTable th, #customerTable td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  white-space: nowrap; /* prevents text from wrapping */
+}
+
+#customerTable th {
+  background-color: #007bff;
+  position: sticky;
+  top: 0; /* keeps headers visible when scrolling */
+  z-index: 2;
+}

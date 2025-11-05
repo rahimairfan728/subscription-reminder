@@ -4,32 +4,178 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Subscription Reminder App</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    /* small embedded CSS so it looks okay immediately */
-    body { font-family: Arial, sans-serif; background:#f5f7fa; margin:0; padding:20px; }
-    .container { max-width:1000px; margin:0 auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
-    h1 { text-align:center; margin-top:0; }
-    form { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:16px; }
-    .full { grid-column:1 / -1; }
-    input, select, button { padding:8px; border:1px solid #ccc; border-radius:6px; font-size:14px; }
-    label { font-weight:600; margin-bottom:4px; display:block; }
-    .checkboxes { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    button { background:#007bff; color:#fff; border:none; cursor:pointer; }
-    button:hover { background:#0056b3; }
-    table { width:100%; border-collapse:collapse; margin-top:8px; }
-    th, td { padding:10px; border-bottom:1px solid #e6e6e6; text-align:center; font-size:14px; }
-    th { background:#007bff; color:white; }
-    tr.due-soon { background:#fff4cc; }
-    tr.expired { background:#ffd6d6; }
-    .action-btn { padding:6px 10px; background:#25D366; color:#fff; border-radius:5px; border:none; cursor:pointer; }
-    .small-btn { padding:4px 7px; font-size:13px; border-radius:4px; }
-    .controls { display:flex; gap:10px; justify-content:flex-end; }
-    @media (max-width:700px) {
-      form { grid-template-columns:1fr; }
-      .controls { justify-content:center; margin-top:8px; }
+  <link rel="stylesheet" href="style.css" />
+<style>
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #eef2f7;
+    margin: 0;
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    text-align: center;
+    margin-top: 0;
+    font-size: 26px;
+    color: #007bff;
+  }
+
+  form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px 20px;
+    margin-bottom: 20px;
+  }
+
+  label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+    color: #333;
+  }
+
+  input,
+  select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  input:focus,
+  select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+  }
+
+  .checkboxes {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: #fafafa;
+  }
+
+  button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 15px;
+    transition: background 0.2s ease;
+  }
+
+  button:hover {
+    background: #0056b3;
+  }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+
+  .small-btn {
+    background: #6c757d;
+  }
+
+  .small-btn:hover {
+    background: #5a6268;
+  }
+
+  /* Filters side by side */
+  .filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+    align-items: center;
+  }
+
+  .filter-container input,
+  .filter-container select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  /* Scrollable Table */
+  .table-container {
+    max-width: 100%;
+    max-height: 400px;
+    overflow-x: auto;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 950px;
+  }
+
+  th,
+  td {
+    padding: 10px;
+    border-bottom: 1px solid #e6e6e6;
+    text-align: center;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  th {
+    background: #007bff;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  tr.due-soon {
+    background: #fff4cc;
+  }
+
+  tr.expired {
+    background: #ffd6d6;
+  }
+
+  @media (max-width: 700px) {
+    form {
+      grid-template-columns: 1fr;
     }
-  </style>
+    .controls {
+      justify-content: center;
+      margin-top: 8px;
+    }
+    .filter-container {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+</style>
+
 </head>
 <body>
   <div class="container">
@@ -38,36 +184,41 @@
     <form id="customerForm">
       <div>
         <label for="name">Customer Name</label>
-        <input id="name" type="text" placeholder="e.g. Ali Khan" required>
+        <input id="name" type="text" placeholder="e.g. Ali Khan" required />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="Enter email" />
       </div>
 
       <div>
-        <label for="phone">Phone (country code + number, e.g. 92300...)</label>
-        <input id="phone" type="text" placeholder="923001234567" required>
+        <label for="phone">Phone</label>
+        <input id="phone" type="text" placeholder="923001234567" required />
       </div>
 
-     <div>
-  <label>Services</label>
-  <div id="serviceCheckboxes" class="checkboxes">
-    <label><input type="checkbox" name="service" value="Netflix"> Netflix</label>
-    <label><input type="checkbox" name="service" value="Spotify"> Spotify</label>
-    <label><input type="checkbox" name="service" value="Amazon"> Amazon</label>
-    <label><input type="checkbox" name="service" value="Other"> Other</label>
-  </div>
-</div>
+      <div>
+        <label>Services</label>
+        <div id="serviceCheckboxes" class="checkboxes">
+          <label><input type="checkbox" name="service" value="Netflix" /> Netflix</label>
+          <label><input type="checkbox" name="service" value="Spotify" /> Spotify</label>
+          <label><input type="checkbox" name="service" value="Amazon" /> Amazon</label>
+          <label><input type="checkbox" name="service" value="Other" /> Other</label>
+        </div>
+      </div>
 
       <div>
         <label for="startDate">Start Date</label>
-        <input id="startDate" type="date" required>
+        <input id="startDate" type="date" required />
       </div>
-      <div>
-  <label for="expiryDate">Due Date</label>
-  <input type="date" id="expiryDate">
-</div>
-
 
       <div>
-        <label for="monthsPaid">Months Paid (1 = next due in 1 month)</label>
+        <label for="expiryDate">Due Date</label>
+        <input type="date" id="expiryDate" />
+      </div>
+
+      <div>
+        <label for="monthsPaid">Months Paid</label>
         <select id="monthsPaid">
           <option value="1">1 month</option>
           <option value="2">2 months</option>
@@ -95,24 +246,29 @@
       <button id="clearBtn" class="small-btn">Clear All</button>
     </div>
 
-    
     <h2>Customer List</h2>
-    
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Services</th>
-          <th>Phone</th>
-          <th>Start Date</th>
-          <th>Expiry Date</th>
-          <th>Days Left</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
+
+    <!-- Filters -->
+   
+    <!-- Scrollable Table -->
+    <div class="table-container">
+      <table id="customerTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Services</th>
+            <th>Phone</th>
+            <th>Start Date</th>
+            <th>Expiry Date</th>
+            <th>Days Left</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
   </div>
 
   <script src="script.js"></script>
