@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Subscription Reminder App</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* small embedded CSS so it looks okay immediately */
+    body { font-family: Arial, sans-serif; background:#f5f7fa; margin:0; padding:20px; }
+    .container { max-width:1000px; margin:0 auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+    h1 { text-align:center; margin-top:0; }
+    form { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:16px; }
+    .full { grid-column:1 / -1; }
+    input, select, button { padding:8px; border:1px solid #ccc; border-radius:6px; font-size:14px; }
+    label { font-weight:600; margin-bottom:4px; display:block; }
+    .checkboxes { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    button { background:#007bff; color:#fff; border:none; cursor:pointer; }
+    button:hover { background:#0056b3; }
+    table { width:100%; border-collapse:collapse; margin-top:8px; }
+    th, td { padding:10px; border-bottom:1px solid #e6e6e6; text-align:center; font-size:14px; }
+    th { background:#007bff; color:white; }
+    tr.due-soon { background:#fff4cc; }
+    tr.expired { background:#ffd6d6; }
+    .action-btn { padding:6px 10px; background:#25D366; color:#fff; border-radius:5px; border:none; cursor:pointer; }
+    .small-btn { padding:4px 7px; font-size:13px; border-radius:4px; }
+    .controls { display:flex; gap:10px; justify-content:flex-end; }
+    @media (max-width:700px) {
+      form { grid-template-columns:1fr; }
+      .controls { justify-content:center; margin-top:8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Subscription Reminder</h1>
+
+    <form id="customerForm">
+      <div>
+        <label for="name">Customer Name</label>
+        <input id="name" type="text" placeholder="e.g. Ali Khan" required>
+      </div>
+
+      <div>
+        <label for="phone">Phone (country code + number, e.g. 92300...)</label>
+        <input id="phone" type="text" placeholder="923001234567" required>
+      </div>
+
+     <div>
+  <label>Services</label>
+  <div id="serviceCheckboxes" class="checkboxes">
+    <label><input type="checkbox" name="service" value="Netflix"> Netflix</label>
+    <label><input type="checkbox" name="service" value="Spotify"> Spotify</label>
+    <label><input type="checkbox" name="service" value="Amazon"> Amazon</label>
+    <label><input type="checkbox" name="service" value="Other"> Other</label>
+  </div>
+</div>
+
+      <div>
+        <label for="startDate">Start Date</label>
+        <input id="startDate" type="date" required>
+      </div>
+      <div>
+  <label for="expiryDate">Due Date</label>
+  <input type="date" id="expiryDate">
+</div>
+
+
+      <div>
+        <label for="monthsPaid">Months Paid (1 = next due in 1 month)</label>
+        <select id="monthsPaid">
+          <option value="1">1 month</option>
+          <option value="2">2 months</option>
+          <option value="3">3 months</option>
+          <option value="6">6 months</option>
+          <option value="12">12 months</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="status">Status</label>
+        <select id="status">
+          <option value="Unpaid">Unpaid</option>
+          <option value="Paid">Paid</option>
+        </select>
+      </div>
+
+      <div class="full">
+        <button id="addBtn" type="button">Add / Update Customer</button>
+      </div>
+    </form>
+
+    <div class="controls">
+      <button id="exportBtn" class="small-btn">Export JSON</button>
+      <button id="clearBtn" class="small-btn">Clear All</button>
+    </div>
+
+    <h2>Customer List</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Services</th>
+          <th>Phone</th>
+          <th>Start Date</th>
+          <th>Expiry Date</th>
+          <th>Days Left</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
