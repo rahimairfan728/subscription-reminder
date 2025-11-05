@@ -239,67 +239,91 @@ clearBtn.addEventListener('click', () => {
 });
 
 // ✅ Search functionality (filter by name)
-// ✅ Search functionality (filter by name and service)
+// ✅ Combined search + filter (by name, service, and due month)
 document.addEventListener('DOMContentLoaded', () => {
-  // Create a small wrapper div
+  // Create container for filters
   const filterContainer = document.createElement('div');
   filterContainer.style.display = 'flex';
   filterContainer.style.gap = '10px';
+  filterContainer.style.flexWrap = 'wrap';
   filterContainer.style.marginBottom = '10px';
-  filterContainer.style.alignItems = 'center';
 
-  // Create name search box
+  // Search by name
   const searchInput = document.createElement('input');
   searchInput.id = 'searchInput';
-  searchInput.placeholder = 'Search by customer name...';
+  searchInput.placeholder = 'Search by name...';
   searchInput.style.padding = '8px';
   searchInput.style.flex = '1';
-  searchInput.style.maxWidth = '250px';
   searchInput.style.border = '1px solid #ccc';
   searchInput.style.borderRadius = '5px';
 
-  // Create service filter dropdown
+  // Filter by service
   const serviceFilter = document.createElement('select');
   serviceFilter.id = 'serviceFilter';
+  ['All Services', 'Netflix', 'Spotify', 'Amazon', 'Other'].forEach(opt => {
+    const o = document.createElement('option');
+    o.value = opt === 'All Services' ? '' : opt;
+    o.textContent = opt;
+    serviceFilter.appendChild(o);
+  });
   serviceFilter.style.padding = '8px';
   serviceFilter.style.border = '1px solid #ccc';
   serviceFilter.style.borderRadius = '5px';
-  serviceFilter.style.maxWidth = '180px';
-  serviceFilter.innerHTML = `
-    <option value="">Filter by service</option>
-    <option value="Netflix">Netflix</option>
-    <option value="Spotify">Spotify</option>
-    <option value="Amazon">Amazon</option>
-    <option value="Other">Other</option>
-  `;
 
-  // Append both elements into the container
-  filterContainer.appendChild(searchInput);
-  filterContainer.appendChild(serviceFilter);
+  // Filter by due month
+  const monthFilter = document.createElement('select');
+  monthFilter.id = 'monthFilter';
+  const monthNames = [
+    'All Months', 'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  monthNames.forEach((m, i) => {
+    const o = document.createElement('option');
+    o.value = i === 0 ? '' : i; // month number (1–12)
+    o.textContent = m;
+    monthFilter.appendChild(o);
+  });
+  monthFilter.style.padding = '8px';
+  monthFilter.style.border = '1px solid #ccc';
+  monthFilter.style.borderRadius = '5px';
 
-  // Insert container right below the "Customer List" heading
+  // Insert filters after "Customer List" heading
   const heading = document.querySelector('h2');
   heading.insertAdjacentElement('afterend', filterContainer);
+  filterContainer.append(searchInput, serviceFilter, monthFilter);
 
-  // Function to apply filters
+  // Filter function
   function applyFilters() {
     const nameValue = searchInput.value.toLowerCase();
     const serviceValue = serviceFilter.value;
+    const monthValue = monthFilter.value ? parseInt(monthFilter.value, 10) : null;
 
     const rows = tableBody.querySelectorAll('tr');
     rows.forEach(row => {
-      const nameCell = row.querySelector('td:first-child');
-      const serviceCell = row.querySelector('td:nth-child(2)');
-      const nameMatch = nameCell && nameCell.textContent.toLowerCase().includes(nameValue);
-      const serviceMatch = !serviceValue || (serviceCell && serviceCell.textContent.includes(serviceValue));
-      row.style.display = (nameMatch && serviceMatch) ? '' : 'none';
+      const nameCell = row.querySelector('td:nth-child(1)');
+      const servicesCell = row.querySelector('td:nth-child(2)');
+      const dueDateCell = row.querySelector('td:nth-child(5)');
+      if (!nameCell || !servicesCell || !dueDateCell) return;
+
+      const nameText = nameCell.textContent.toLowerCase();
+      const serviceText = servicesCell.textContent;
+      const dueDate = new Date(dueDateCell.textContent);
+
+      const matchesName = nameText.includes(nameValue);
+      const matchesService = !serviceValue || serviceText.includes(serviceValue);
+      const matchesMonth = !monthValue || (dueDate.getMonth() + 1 === monthValue);
+
+      row.style.display = (matchesName && matchesService && matchesMonth) ? '' : 'none';
     });
   }
 
-  // Event listeners
+  // Attach listeners
   searchInput.addEventListener('input', applyFilters);
   serviceFilter.addEventListener('change', applyFilters);
+  monthFilter.addEventListener('change', applyFilters);
 });
+
+
 
 
 render();
