@@ -85,6 +85,7 @@ function render() {
 }
 
 // Add / Update customer logic
+// Add / Update customer logic (fixed: respect manual expiry when editing)
 addBtn.addEventListener('click', () => {
   const name = nameInput.value.trim();
   const phone = phoneInput.value.trim();
@@ -98,46 +99,75 @@ addBtn.addEventListener('click', () => {
   if (!startDate) return alert('Please select start date');
   if (services.length === 0) return alert('Please select at least one service');
 
-  const expiryDate = expiryDateInput.value ? expiryDateInput.value : addMonthsToDate(startDate, monthsPaid);
+  // If user typed/selected an expiry in the input, treat it as manual expiry.
+  // Trim to avoid whitespace issues.
+  const manualExpiry = expiryDateInput.value && expiryDateInput.value.trim() ? expiryDateInput.value.trim() : null;
 
-  // Duplicate check (by name + number)
-  const duplicate = customers.find(c => c.name === name && c.phone === phone);
-  if (duplicate) {
-    alert('Customer already exists. Try editing the information.');
-    return;
-  }
+  // For new customer candidate expiry:
+  const expiryForNew = manualExpiry || addMonthsToDate(startDate, monthsPaid);
 
+  // Find by phone (primary key)
   const existingIndex = customers.findIndex(c => c.phone === phone);
+
   if (existingIndex >= 0) {
+    // Update existing record
     const existing = customers[existingIndex];
-    existing.services = [...new Set([...existing.services, ...services])];
+
+    // merge services (no duplicates)
+    existing.services = Array.from(new Set([...(existing.services || []), ...services]));
+
+    // update name/status
     existing.name = name;
     existing.status = status;
-    const baseForExtension =
-      new Date(existing.expiryDate) > new Date() ? existing.expiryDate : startDate;
-    existing.expiryDate = addMonthsToDate(baseForExtension, monthsPaid);
-    if (new Date(startDate) < new Date(existing.startDate)) {
+
+    // EXPIRY update rules when editing:
+    // - If user explicitly set a manual expiry (and it's different from stored), accept that value.
+    // - Else, extend existing expiry by monthsPaid (base is existing.expiryDate if in future, otherwise startDate).
+    if (manualExpiry && manualExpiry !== existing.expiryDate) {
+      existing.expiryDate = manualExpiry;
+    } else {
+      const baseForExtension = (existing.expiryDate && new Date(existing.expiryDate) > new Date())
+        ? existing.expiryDate
+        : startDate;
+      existing.expiryDate = addMonthsToDate(baseForExtension, monthsPaid);
+    }
+
+    // Keep the earliest startDate if user provided an earlier one
+    if (!existing.startDate || new Date(startDate) < new Date(existing.startDate)) {
       existing.startDate = startDate;
     }
+
     alert('Customer updated successfully!');
   } else {
+    // New customer — check exact duplicate (name+phone) to prevent accidental duplicate
+    const duplicate = customers.find(c => c.name === name && c.phone === phone);
+    if (duplicate) {
+      alert('Customer already exists. Try editing the information.');
+      return;
+    }
+
+    // Add new customer with expiryForNew (manual if provided, else calculated)
     customers.push({
       name,
       phone,
       services,
       startDate,
-      expiryDate,
+      expiryDate: expiryForNew,
       status,
     });
+
     alert('Customer added successfully!');
   }
 
   save();
   render();
+
+  // reset form and clear checkboxes + expiry input
   form.reset();
   document.querySelectorAll('input[name="service"]').forEach(cb => (cb.checked = false));
   expiryDateInput.value = '';
 });
+
 
 // Auto-set Due Date = 1 month after joining date
 startDateInput.addEventListener('change', () => {
